@@ -1,145 +1,791 @@
 <!doctype html>
 <html lang="en" dir="ltr">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#10223e">
-  <title>SkyMotion Weather</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="theme-color"
+        content="#10223e"
+    >
+
+    <title>SkyMotion Weather</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
-<body data-weather="clear" data-time="day">
-  <div id="weatherScene" aria-hidden="true">
+
+
+<body
+    data-weather="clear"
+    data-time="day"
+    data-font="modern"
+>
+
+
+<!-- =====================================================
+     WEATHER BACKGROUND
+     ===================================================== -->
+
+<div
+    id="weatherScene"
+    aria-hidden="true"
+>
+
     <div class="stars"></div>
+
     <div class="sunMoon"></div>
+
     <div class="cloud cloud-a">☁</div>
+
     <div class="cloud cloud-b">☁</div>
+
     <div class="cloud cloud-c">☁</div>
+
     <div id="precipitation"></div>
+
     <div id="lightning"></div>
-    <div class="fog fog-a"></div><div class="fog fog-b"></div>
-  </div>
 
-  <header class="site-header">
-    <a class="brand" href="#"><span class="brand-mark">◒</span><b>SkyMotion</b></a>
+    <div class="fog fog-a"></div>
+
+    <div class="fog fog-b"></div>
+
+</div>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<header class="site-header">
+
+    <a
+        class="brand"
+        href="#"
+    >
+        <span class="brand-mark">◒</span>
+
+        <b>SkyMotion</b>
+    </a>
+
+
     <div class="header-actions">
-      <button id="langBtn" class="icon-btn" type="button">AR</button>
-      <button id="themeBtn" class="icon-btn" type="button" aria-label="Toggle theme">☾</button>
+
+        <!-- Font Style -->
+        <button
+            id="fontBtn"
+            class="icon-btn"
+            type="button"
+            aria-label="Change font style"
+            title="Change font style"
+        >
+            Aa
+        </button>
+
+
+        <!-- Language -->
+        <button
+            id="langBtn"
+            class="icon-btn"
+            type="button"
+        >
+            AR
+        </button>
+
+
+        <!-- Theme -->
+        <button
+            id="themeBtn"
+            class="icon-btn"
+            type="button"
+            aria-label="Toggle theme"
+        >
+            ☾
+        </button>
+
     </div>
-  </header>
 
-  <main>
+</header>
+
+
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
+<main>
+
+
+    <!-- =================================================
+         HERO
+         ================================================= -->
+
     <section class="hero">
-      <div class="hero-copy">
-        <span class="eyebrow"><i></i><span data-t="live">LIVE WEATHER</span></span>
-        <h1 data-t-html="title">Weather that<br><em>moves with you.</em></h1>
-        <p data-t="subtitle">Search a city or country and get a clear view of what the sky is doing now and next.</p>
 
-        <form id="searchForm" autocomplete="off">
-          <div class="search-box">
-            <span class="search-icon">⌕</span>
-            <input id="searchInput" type="search" data-ph="placeholder" placeholder="Search Cairo, Egypt, Dubai...">
-            <button type="submit" data-t="search">Search</button>
-          </div>
-          <div id="suggestions" class="suggestions hidden"></div>
-        </form>
 
-        <div class="quick-row">
-          <button id="locationBtn" class="quiet-btn" type="button">⌖ <span data-t="myLocation">My location</span></button>
-          <div id="recent"></div>
-        </div>
-      </div>
+        <!-- HERO TEXT -->
 
-      <div class="hero-orbit" aria-hidden="true">
-        <div class="orbit-ring"></div>
-        <div id="heroIcon" class="hero-icon">☀️</div>
-        <div id="heroTemp" class="hero-temp">--°</div>
-        <div id="heroCity" class="hero-city">SkyMotion</div>
-      </div>
-    </section>
+        <div class="hero-copy">
 
-    <div id="status" role="status" aria-live="polite"></div>
+            <span class="eyebrow">
 
-    <section id="dashboard" class="hidden">
-      <div class="dashboard-head">
-        <div>
-          <p id="greeting" class="muted"></p>
-          <h2 id="place">—</h2>
-          <p id="localTime" class="muted"></p>
-        </div>
-        <div class="dashboard-actions">
-          <button id="favoriteBtn" class="quiet-btn" type="button">♡ <span data-t="favorite">Favorite</span></button>
-          <button id="shareBtn" class="quiet-btn" type="button">↗ <span data-t="share">Share</span></button>
-        </div>
-      </div>
+                <i></i>
 
-      <div id="alertBox" class="alert hidden"></div>
+                <span data-t="live">
+                    LIVE WEATHER
+                </span>
 
-      <div class="top-grid">
-        <article class="panel current-panel tilt">
-          <div class="condition-row">
-            <div>
-              <p id="date" class="muted"></p>
-              <h3 id="description">—</h3>
+            </span>
+
+
+            <h1 data-t-html="title">
+                Weather that
+                <br>
+                <em>moves with you.</em>
+            </h1>
+
+
+            <p data-t="subtitle">
+                Search a city or country and get a clear view
+                of what the sky is doing now and next.
+            </p>
+
+
+            <!-- SEARCH -->
+
+            <form
+                id="searchForm"
+                autocomplete="off"
+            >
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+
+                    <input
+                        id="searchInput"
+                        type="search"
+                        data-ph="placeholder"
+                        placeholder="Search Cairo, Egypt, Dubai..."
+                    >
+
+
+                    <button
+                        type="submit"
+                        data-t="search"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="suggestions"
+                    class="suggestions hidden"
+                ></div>
+
+            </form>
+
+
+            <!-- QUICK SEARCH -->
+
+            <div class="quick-row">
+
+                <button
+                    id="locationBtn"
+                    class="quiet-btn"
+                    type="button"
+                >
+                    ⌖
+
+                    <span data-t="myLocation">
+                        My location
+                    </span>
+                </button>
+
+
+                <div id="recent"></div>
+
             </div>
-            <div id="weatherIcon" class="weather-icon">☀️</div>
-          </div>
-          <div class="temperature-row">
-            <strong id="temperature">--°</strong>
-            <span id="feelsLike"></span>
-          </div>
-          <div class="metrics">
-            <div><span>💧</span><small data-t="humidity">Humidity</small><b id="humidity">—</b></div>
-            <div><span>💨</span><small data-t="wind">Wind</small><b id="wind">—</b></div>
-            <div><span>👁</span><small data-t="visibility">Visibility</small><b id="visibility">—</b></div>
-            <div><span>🌡</span><small data-t="pressure">Pressure</small><b id="pressure">—</b></div>
-          </div>
-        </article>
 
-        <article class="panel air-panel tilt">
-          <div class="section-title"><h3 data-t="airQuality">Air Quality</h3><span id="aqBadge" class="badge">—</span></div>
-          <div class="aq-number"><strong id="aqi">—</strong><span>US AQI</span></div>
-          <div class="air-grid">
-            <div><small>PM2.5</small><b id="pm25">—</b></div>
-            <div><small>PM10</small><b id="pm10">—</b></div>
-            <div><small data-t="uv">UV Index</small><b id="uv">—</b></div>
-            <div><small data-t="rainChance">Rain chance</small><b id="rainChance">—</b></div>
-          </div>
-        </article>
-      </div>
-
-      <article class="panel sun-panel">
-        <div class="section-title"><h3 data-t="sunCycle">Sun cycle</h3><span id="daylightText" class="muted"></span></div>
-        <div class="sun-track"><div id="sunProgress" class="sun-progress"></div><span id="sunDot">●</span></div>
-        <div class="sun-times"><span>🌅 <b id="sunrise">—</b></span><span>🌇 <b id="sunset">—</b></span></div>
-      </article>
-
-      <article class="panel section-panel">
-        <div class="section-title">
-          <h3 data-t="hourly">Next 12 hours</h3>
-          <div class="unit-toggle"><button id="cBtn" type="button">°C</button><button id="fBtn" type="button">°F</button></div>
         </div>
-        <div id="hourly" class="hourly"></div>
-      </article>
 
-      <article class="panel section-panel">
-        <div class="section-title"><h3 data-t="forecast">7-Day Forecast</h3><span class="muted" data-t="trend">Temperature trend</span></div>
-        <div class="chart-wrap"><canvas id="tempChart" width="900" height="210"></canvas></div>
-        <div id="daily" class="daily"></div>
-      </article>
 
-      <article class="panel favorites-panel">
-        <div class="section-title"><h3 data-t="favorites">Saved places</h3><button id="clearRecentBtn" class="text-btn" type="button" data-t="clearRecent">Clear recent</button></div>
-        <div id="favorites" class="favorites"></div>
-      </article>
+        <!-- =================================================
+             HERO WEATHER ORBIT
+             ================================================= -->
 
-      <details class="about">
-        <summary data-t="about">About this project</summary>
-        <p data-t="aboutText">A responsive weather dashboard built with HTML5, CSS3 and vanilla JavaScript. It uses public weather, geocoding and air-quality APIs, asynchronous requests, local storage and browser geolocation.</p>
-      </details>
+        <div
+            class="hero-orbit"
+            aria-hidden="true"
+        >
+
+            <div class="orbit-ring"></div>
+
+
+            <div
+                id="heroIcon"
+                class="hero-icon"
+            >
+                ☀️
+            </div>
+
+
+            <div
+                id="heroTemp"
+                class="hero-temp"
+            >
+                --°
+            </div>
+
+
+            <div
+                id="heroCity"
+                class="hero-city"
+            >
+                SkyMotion
+            </div>
+
+        </div>
+
     </section>
-  </main>
 
-  <footer><span data-t="footer">Live data from Open-Meteo • No API key required</span></footer>
-  <script src="script.js"></script>
+
+    <!-- =================================================
+         STATUS
+         ================================================= -->
+
+    <div
+        id="status"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+    <!-- =================================================
+         WEATHER DASHBOARD
+         ================================================= -->
+
+    <section
+        id="dashboard"
+        class="hidden"
+    >
+
+
+        <!-- DASHBOARD HEADER -->
+
+        <div class="dashboard-head">
+
+            <div>
+
+                <p
+                    id="greeting"
+                    class="muted"
+                ></p>
+
+
+                <h2 id="place">
+                    —
+                </h2>
+
+
+                <p
+                    id="localTime"
+                    class="muted"
+                ></p>
+
+            </div>
+
+
+            <div class="dashboard-actions">
+
+
+                <button
+                    id="favoriteBtn"
+                    class="quiet-btn"
+                    type="button"
+                >
+                    ♡
+
+                    <span data-t="favorite">
+                        Favorite
+                    </span>
+                </button>
+
+
+                <button
+                    id="shareBtn"
+                    class="quiet-btn"
+                    type="button"
+                >
+                    ↗
+
+                    <span data-t="share">
+                        Share
+                    </span>
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ALERTS -->
+
+        <div
+            id="alertBox"
+            class="alert hidden"
+        ></div>
+
+
+        <!-- =================================================
+             TOP GRID
+             ================================================= -->
+
+        <div class="top-grid">
+
+
+            <!-- CURRENT WEATHER -->
+
+            <article class="panel current-panel tilt">
+
+
+                <div class="condition-row">
+
+                    <div>
+
+                        <p
+                            id="date"
+                            class="muted"
+                        ></p>
+
+
+                        <h3 id="description">
+                            —
+                        </h3>
+
+                    </div>
+
+
+                    <div
+                        id="weatherIcon"
+                        class="weather-icon"
+                    >
+                        ☀️
+                    </div>
+
+                </div>
+
+
+                <div class="temperature-row">
+
+                    <strong id="temperature">
+                        --°
+                    </strong>
+
+
+                    <span id="feelsLike"></span>
+
+                </div>
+
+
+                <!-- WEATHER METRICS -->
+
+                <div class="metrics">
+
+
+                    <div>
+
+                        <span>💧</span>
+
+                        <small data-t="humidity">
+                            Humidity
+                        </small>
+
+                        <b id="humidity">
+                            —
+                        </b>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>💨</span>
+
+                        <small data-t="wind">
+                            Wind
+                        </small>
+
+                        <b id="wind">
+                            —
+                        </b>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>👁</span>
+
+                        <small data-t="visibility">
+                            Visibility
+                        </small>
+
+                        <b id="visibility">
+                            —
+                        </b>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>🌡</span>
+
+                        <small data-t="pressure">
+                            Pressure
+                        </small>
+
+                        <b id="pressure">
+                            —
+                        </b>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 AIR QUALITY
+                 ================================================= -->
+
+            <article class="panel air-panel tilt">
+
+
+                <div class="section-title">
+
+                    <h3 data-t="airQuality">
+                        Air Quality
+                    </h3>
+
+
+                    <span
+                        id="aqBadge"
+                        class="badge"
+                    >
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="aq-number">
+
+                    <strong id="aqi">
+                        —
+                    </strong>
+
+                    <span>
+                        US AQI
+                    </span>
+
+                </div>
+
+
+                <div class="air-grid">
+
+
+                    <div>
+
+                        <small>
+                            PM2.5
+                        </small>
+
+                        <b id="pm25">
+                            —
+                        </b>
+
+                    </div>
+
+
+                    <div>
+
+                        <small>
+                            PM10
+                        </small>
+
+                        <b id="pm10">
+                            —
+                        </b>
+
+                    </div>
+
+
+                    <div>
+
+                        <small data-t="uv">
+                            UV Index
+                        </small>
+
+                        <b id="uv">
+                            —
+                        </b>
+
+                    </div>
+
+
+                    <div>
+
+                        <small data-t="rainChance">
+                            Rain chance
+                        </small>
+
+                        <b id="rainChance">
+                            —
+                        </b>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+
+        <!-- =================================================
+             SUN CYCLE
+             ================================================= -->
+
+        <article class="panel sun-panel">
+
+
+            <div class="section-title">
+
+                <h3 data-t="sunCycle">
+                    Sun cycle
+                </h3>
+
+
+                <span
+                    id="daylightText"
+                    class="muted"
+                ></span>
+
+            </div>
+
+
+            <div class="sun-track">
+
+                <div
+                    id="sunProgress"
+                    class="sun-progress"
+                ></div>
+
+
+                <span id="sunDot">
+                    ●
+                </span>
+
+            </div>
+
+
+            <div class="sun-times">
+
+                <span>
+                    🌅
+                    <b id="sunrise">
+                        —
+                    </b>
+                </span>
+
+
+                <span>
+                    🌇
+                    <b id="sunset">
+                        —
+                    </b>
+                </span>
+
+            </div>
+
+        </article>
+
+
+        <!-- =================================================
+             HOURLY
+             ================================================= -->
+
+        <article class="panel section-panel">
+
+
+            <div class="section-title">
+
+                <h3 data-t="hourly">
+                    Next 12 hours
+                </h3>
+
+
+                <div class="unit-toggle">
+
+                    <button
+                        id="cBtn"
+                        type="button"
+                    >
+                        °C
+                    </button>
+
+
+                    <button
+                        id="fBtn"
+                        type="button"
+                    >
+                        °F
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="hourly"
+                class="hourly"
+            ></div>
+
+        </article>
+
+
+        <!-- =================================================
+             7 DAY FORECAST
+             ================================================= -->
+
+        <article class="panel section-panel">
+
+
+            <div class="section-title">
+
+                <h3 data-t="forecast">
+                    7-Day Forecast
+                </h3>
+
+
+                <span
+                    class="muted"
+                    data-t="trend"
+                >
+                    Temperature trend
+                </span>
+
+            </div>
+
+
+            <div class="chart-wrap">
+
+                <canvas
+                    id="tempChart"
+                    width="900"
+                    height="210"
+                ></canvas>
+
+            </div>
+
+
+            <div
+                id="daily"
+                class="daily"
+            ></div>
+
+        </article>
+
+
+        <!-- =================================================
+             FAVORITES
+             ================================================= -->
+
+        <article class="panel favorites-panel">
+
+
+            <div class="section-title">
+
+                <h3 data-t="favorites">
+                    Saved places
+                </h3>
+
+
+                <button
+                    id="clearRecentBtn"
+                    class="text-btn"
+                    type="button"
+                    data-t="clearRecent"
+                >
+                    Clear favorites
+                </button>
+
+            </div>
+
+
+            <div
+                id="favorites"
+                class="favorites"
+            ></div>
+
+        </article>
+
+
+        <!-- =================================================
+             ABOUT
+             ================================================= -->
+
+        <details class="about">
+
+            <summary data-t="about">
+                About this project
+            </summary>
+
+
+            <p data-t="aboutText">
+                A responsive weather dashboard built with HTML5,
+                CSS3 and vanilla JavaScript. It uses public weather,
+                geocoding and air-quality APIs, asynchronous requests,
+                local storage and browser geolocation.
+            </p>
+
+        </details>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer>
+
+    <span data-t="footer">
+        Live data from Open-Meteo • No API key required
+    </span>
+
+</footer>
+
+
+<script src="script.js"></script>
+
 </body>
+
 </html>
