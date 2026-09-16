@@ -1,7 +1,23 @@
+/* =========================================================
+   SKYMOTION
+   Main JavaScript
+   ========================================================= */
+
+
+/* =========================================================
+   1. HELPERS & SETTINGS
+   ========================================================= */
+
 const $ = id => document.getElementById(id);
 
-let lang = localStorage.getItem("smLang") || "en";
-let unit = localStorage.getItem("smUnit") || "celsius";
+let lang =
+    localStorage.getItem("smLang") || "en";
+
+let unit =
+    localStorage.getItem("smUnit") || "celsius";
+
+let fontStyle =
+    localStorage.getItem("smFont") || "modern";
 
 let currentPlace = null;
 let currentData = null;
@@ -9,213 +25,696 @@ let searchTimer = null;
 
 
 /* =========================================================
-   TRANSLATIONS
+   2. TRANSLATIONS
    ========================================================= */
 
 const T = {
+
     en: {
+
         live: "LIVE WEATHER",
-        title: "Weather that<br><em>moves with you.</em>",
-        subtitle: "Search a city or country and get a clear view of what the sky is doing now and next.",
-        placeholder: "Search Cairo, Egypt, Dubai...",
+
+        title:
+            "Weather that<br><em>moves with you.</em>",
+
+        subtitle:
+            "Search a city or country and get a clear view of what the sky is doing now and next.",
+
+        placeholder:
+            "Search Cairo, Egypt, Dubai...",
+
         search: "Search",
+
         myLocation: "My location",
+
         favorite: "Favorite",
+
         share: "Share",
+
         humidity: "Humidity",
+
         wind: "Wind",
+
         visibility: "Visibility",
+
         pressure: "Pressure",
+
         airQuality: "Air Quality",
+
         uv: "UV Index",
+
         rainChance: "Rain chance",
+
         sunCycle: "Sun cycle",
+
         hourly: "Next 12 hours",
+
         forecast: "7-Day Forecast",
+
         trend: "Temperature trend",
+
         favorites: "Saved places",
 
         clearRecent: "Clear favorites",
 
         about: "About this project",
-        aboutText: "A responsive weather dashboard built with HTML5, CSS3 and vanilla JavaScript. It uses public weather, geocoding and air-quality APIs, asynchronous requests, local storage and browser geolocation.",
-        footer: "Live data from Open-Meteo • No API key required",
+
+        aboutText:
+            "A responsive weather dashboard built with HTML5, CSS3 and vanilla JavaScript. It uses public weather, geocoding and air-quality APIs, asynchronous requests, local storage and browser geolocation.",
+
+        footer:
+            "Live data from Open-Meteo • No API key required",
+
         feels: "Feels like",
-        loading: "Getting live weather…",
-        notFound: "No matching place found. Try a city or country name.",
-        network: "Weather service is temporarily unavailable. Please try again.",
-        copied: "Weather summary copied.",
-        saved: "Saved to favorites.",
-        removed: "Removed from favorites.",
-        dayLight: "Daylight",
-        daylight: "Daylight",
-        night: "Night time",
-        goodMorning: "Good morning",
-        goodAfternoon: "Good afternoon",
-        goodEvening: "Good evening",
-        alertHeat: "High temperature",
-        alertWind: "Strong wind",
-        alertRain: "Heavy rain possible",
-        alertStorm: "Thunderstorm conditions",
-        countryNote: "Showing weather for a representative city in"
+
+        loading:
+            "Getting live weather…",
+
+        notFound:
+            "No matching place found. Try a city or country name.",
+
+        network:
+            "Weather service is temporarily unavailable. Please try again.",
+
+        copied:
+            "Weather summary copied.",
+
+        saved:
+            "Saved to favorites.",
+
+        removed:
+            "Removed from favorites.",
+
+        favoritesCleared:
+            "All saved places have been cleared.",
+
+        daylight:
+            "Daylight",
+
+        night:
+            "Night time",
+
+        goodMorning:
+            "Good morning",
+
+        goodAfternoon:
+            "Good afternoon",
+
+        goodEvening:
+            "Good evening",
+
+        alertHeat:
+            "High temperature",
+
+        alertWind:
+            "Strong wind",
+
+        alertRain:
+            "Heavy rain possible",
+
+        alertStorm:
+            "Thunderstorm conditions",
+
+        countryNote:
+            "Showing weather for a representative city in"
     },
 
+
     ar: {
+
         live: "طقس مباشر",
-        title: "الطقس أمامك<br><em>يتحرك معك.</em>",
-        subtitle: "ابحث باسم مدينة أو دولة وشاهد حالة الطقس الآن وما هو متوقع خلال الساعات والأيام القادمة.",
-        placeholder: "ابحث: القاهرة، مصر، دبي...",
+
+        title:
+            "الطقس أمامك<br><em>يتحرك معك.</em>",
+
+        subtitle:
+            "ابحث باسم مدينة أو دولة وشاهد حالة الطقس الآن وما هو متوقع خلال الساعات والأيام القادمة.",
+
+        placeholder:
+            "ابحث: القاهرة، مصر، دبي...",
+
         search: "بحث",
+
         myLocation: "موقعي",
+
         favorite: "المفضلة",
+
         share: "مشاركة",
+
         humidity: "الرطوبة",
+
         wind: "الرياح",
+
         visibility: "الرؤية",
+
         pressure: "الضغط",
+
         airQuality: "جودة الهواء",
+
         uv: "مؤشر UV",
+
         rainChance: "احتمال المطر",
+
         sunCycle: "الشروق والغروب",
+
         hourly: "الـ 12 ساعة القادمة",
+
         forecast: "توقعات 7 أيام",
+
         trend: "اتجاه درجات الحرارة",
+
         favorites: "الأماكن المحفوظة",
 
         clearRecent: "مسح التفضيلات",
 
         about: "عن المشروع",
-        aboutText: "لوحة طقس متجاوبة مبنية باستخدام HTML5 وCSS3 وJavaScript بدون أطر عمل، وتعتمد على واجهات عامة للطقس والبحث الجغرافي وجودة الهواء مع الطلبات غير المتزامنة والتخزين المحلي وتحديد الموقع.",
-        footer: "بيانات مباشرة من Open-Meteo • بدون API Key",
+
+        aboutText:
+            "لوحة طقس متجاوبة مبنية باستخدام HTML5 وCSS3 وJavaScript بدون أطر عمل، وتعتمد على واجهات عامة للطقس والبحث الجغرافي وجودة الهواء مع الطلبات غير المتزامنة والتخزين المحلي وتحديد الموقع.",
+
+        footer:
+            "بيانات مباشرة من Open-Meteo • بدون API Key",
+
         feels: "المحسوسة",
-        loading: "جاري تحميل الطقس المباشر…",
-        notFound: "لم نجد المكان. جرّب اسم مدينة أو دولة.",
-        network: "خدمة الطقس غير متاحة مؤقتًا. حاول مرة أخرى.",
-        copied: "تم نسخ ملخص الطقس.",
-        saved: "تمت الإضافة للمفضلة.",
-        removed: "تم الحذف من المفضلة.",
-        daylight: "نهار",
-        night: "وقت الليل",
-        goodMorning: "صباح الخير",
-        goodAfternoon: "نهارك سعيد",
-        goodEvening: "مساء الخير",
-        alertHeat: "درجة حرارة مرتفعة",
-        alertWind: "رياح قوية",
-        alertRain: "احتمال أمطار غزيرة",
-        alertStorm: "أجواء عاصفة ورعدية",
-        countryNote: "يتم عرض الطقس لمدينة ممثلة داخل"
+
+        loading:
+            "جاري تحميل الطقس المباشر…",
+
+        notFound:
+            "لم نجد المكان. جرّب اسم مدينة أو دولة.",
+
+        network:
+            "خدمة الطقس غير متاحة مؤقتًا. حاول مرة أخرى.",
+
+        copied:
+            "تم نسخ ملخص الطقس.",
+
+        saved:
+            "تمت الإضافة للمفضلة.",
+
+        removed:
+            "تم الحذف من المفضلة.",
+
+        favoritesCleared:
+            "تم مسح جميع الأماكن المحفوظة.",
+
+        daylight:
+            "نهار",
+
+        night:
+            "وقت الليل",
+
+        goodMorning:
+            "صباح الخير",
+
+        goodAfternoon:
+            "نهارك سعيد",
+
+        goodEvening:
+            "مساء الخير",
+
+        alertHeat:
+            "درجة حرارة مرتفعة",
+
+        alertWind:
+            "رياح قوية",
+
+        alertRain:
+            "احتمال أمطار غزيرة",
+
+        alertStorm:
+            "أجواء عاصفة ورعدية",
+
+        countryNote:
+            "يتم عرض الطقس لمدينة ممثلة داخل"
     }
 };
 
 
 /* =========================================================
-   WEATHER CODES
+   3. WEATHER CODES
    ========================================================= */
 
 const W = {
-    0: ["Clear", "صحو", "☀️", "clear"],
-    1: ["Mostly clear", "صحو غالبًا", "🌤️", "clear"],
-    2: ["Partly cloudy", "غائم جزئيًا", "⛅", "cloud"],
-    3: ["Overcast", "غائم", "☁️", "cloud"],
 
-    45: ["Fog", "ضباب", "🌫️", "fog"],
-    48: ["Fog", "ضباب", "🌫️", "fog"],
+    0: [
+        "Clear",
+        "صحو",
+        "☀️",
+        "clear"
+    ],
 
-    51: ["Light drizzle", "رذاذ خفيف", "🌦️", "rain"],
-    53: ["Drizzle", "رذاذ", "🌦️", "rain"],
-    55: ["Heavy drizzle", "رذاذ كثيف", "🌧️", "rain"],
+    1: [
+        "Mostly clear",
+        "صحو غالبًا",
+        "🌤️",
+        "clear"
+    ],
 
-    61: ["Light rain", "أمطار خفيفة", "🌧️", "rain"],
-    63: ["Rain", "أمطار", "🌧️", "rain"],
-    65: ["Heavy rain", "أمطار غزيرة", "🌧️", "rain"],
-    66: ["Freezing rain", "أمطار متجمدة", "🌧️", "rain"],
-    67: ["Freezing rain", "أمطار متجمدة", "🌧️", "rain"],
+    2: [
+        "Partly cloudy",
+        "غائم جزئيًا",
+        "⛅",
+        "cloud"
+    ],
 
-    71: ["Light snow", "ثلوج خفيفة", "🌨️", "snow"],
-    73: ["Snow", "ثلوج", "🌨️", "snow"],
-    75: ["Heavy snow", "ثلوج كثيفة", "❄️", "snow"],
-    77: ["Snow grains", "حبيبات ثلج", "❄️", "snow"],
+    3: [
+        "Overcast",
+        "غائم",
+        "☁️",
+        "cloud"
+    ],
 
-    80: ["Rain showers", "زخات مطر", "🌦️", "rain"],
-    81: ["Rain showers", "زخات مطر", "🌧️", "rain"],
-    82: ["Heavy showers", "زخات غزيرة", "⛈️", "storm"],
+    45: [
+        "Fog",
+        "ضباب",
+        "🌫️",
+        "fog"
+    ],
 
-    85: ["Snow showers", "زخات ثلج", "🌨️", "snow"],
-    86: ["Heavy snow showers", "زخات ثلج كثيفة", "❄️", "snow"],
+    48: [
+        "Fog",
+        "ضباب",
+        "🌫️",
+        "fog"
+    ],
 
-    95: ["Thunderstorm", "عاصفة رعدية", "⛈️", "storm"],
-    96: ["Thunderstorm with hail", "عاصفة رعدية وبَرَد", "⛈️", "storm"],
-    99: ["Severe thunderstorm", "عاصفة رعدية شديدة", "⛈️", "storm"]
+    51: [
+        "Light drizzle",
+        "رذاذ خفيف",
+        "🌦️",
+        "rain"
+    ],
+
+    53: [
+        "Drizzle",
+        "رذاذ",
+        "🌦️",
+        "rain"
+    ],
+
+    55: [
+        "Heavy drizzle",
+        "رذاذ كثيف",
+        "🌧️",
+        "rain"
+    ],
+
+    61: [
+        "Light rain",
+        "أمطار خفيفة",
+        "🌧️",
+        "rain"
+    ],
+
+    63: [
+        "Rain",
+        "أمطار",
+        "🌧️",
+        "rain"
+    ],
+
+    65: [
+        "Heavy rain",
+        "أمطار غزيرة",
+        "🌧️",
+        "rain"
+    ],
+
+    66: [
+        "Freezing rain",
+        "أمطار متجمدة",
+        "🌧️",
+        "rain"
+    ],
+
+    67: [
+        "Freezing rain",
+        "أمطار متجمدة",
+        "🌧️",
+        "rain"
+    ],
+
+    71: [
+        "Light snow",
+        "ثلوج خفيفة",
+        "🌨️",
+        "snow"
+    ],
+
+    73: [
+        "Snow",
+        "ثلوج",
+        "🌨️",
+        "snow"
+    ],
+
+    75: [
+        "Heavy snow",
+        "ثلوج كثيفة",
+        "❄️",
+        "snow"
+    ],
+
+    77: [
+        "Snow grains",
+        "حبيبات ثلج",
+        "❄️",
+        "snow"
+    ],
+
+    80: [
+        "Rain showers",
+        "زخات مطر",
+        "🌦️",
+        "rain"
+    ],
+
+    81: [
+        "Rain showers",
+        "زخات مطر",
+        "🌧️",
+        "rain"
+    ],
+
+    82: [
+        "Heavy showers",
+        "زخات غزيرة",
+        "⛈️",
+        "storm"
+    ],
+
+    85: [
+        "Snow showers",
+        "زخات ثلج",
+        "🌨️",
+        "snow"
+    ],
+
+    86: [
+        "Heavy snow showers",
+        "زخات ثلج كثيفة",
+        "❄️",
+        "snow"
+    ],
+
+    95: [
+        "Thunderstorm",
+        "عاصفة رعدية",
+        "⛈️",
+        "storm"
+    ],
+
+    96: [
+        "Thunderstorm with hail",
+        "عاصفة رعدية وبَرَد",
+        "⛈️",
+        "storm"
+    ],
+
+    99: [
+        "Severe thunderstorm",
+        "عاصفة رعدية شديدة",
+        "⛈️",
+        "storm"
+    ]
 };
 
 
 /* =========================================================
-   LANGUAGE
+   4. TRANSLATION FUNCTION
    ========================================================= */
 
 function tr() {
 
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang =
+        lang;
 
-    document.querySelectorAll("[data-t]").forEach(el => {
-        el.textContent = T[lang][el.dataset.t];
-    });
+    document.documentElement.dir =
+        lang === "ar"
+            ? "rtl"
+            : "ltr";
 
-    document.querySelectorAll("[data-t-html]").forEach(el => {
-        el.innerHTML = T[lang][el.dataset.tHtml];
-    });
 
-    document.querySelectorAll("[data-ph]").forEach(el => {
-        el.placeholder = T[lang][el.dataset.ph];
-    });
+    document
+        .querySelectorAll("[data-t]")
+        .forEach(el => {
 
-    $("langBtn").textContent = lang === "en" ? "AR" : "EN";
+            const key =
+                el.dataset.t;
+
+            if (T[lang][key] !== undefined) {
+
+                el.textContent =
+                    T[lang][key];
+            }
+        });
+
+
+    document
+        .querySelectorAll("[data-t-html]")
+        .forEach(el => {
+
+            const key =
+                el.dataset.tHtml;
+
+            if (T[lang][key] !== undefined) {
+
+                el.innerHTML =
+                    T[lang][key];
+            }
+        });
+
+
+    document
+        .querySelectorAll("[data-ph]")
+        .forEach(el => {
+
+            const key =
+                el.dataset.ph;
+
+            if (T[lang][key] !== undefined) {
+
+                el.placeholder =
+                    T[lang][key];
+            }
+        });
+
+
+    $("langBtn").textContent =
+        lang === "en"
+            ? "AR"
+            : "EN";
+
 
     renderRecent();
+
     renderFavorites();
+
+
+    if (currentData) {
+
+        renderSun(currentData);
+    }
 }
 
 
 /* =========================================================
-   HELPERS
+   5. FONT STYLE
+   ========================================================= */
+
+const fontStyles = [
+    "modern",
+    "clean",
+    "elegant"
+];
+
+
+function applyFontStyle() {
+
+    if (
+        !fontStyles.includes(fontStyle)
+    ) {
+
+        fontStyle = "modern";
+    }
+
+
+    document.body.dataset.font =
+        fontStyle;
+
+
+    const names = {
+
+        modern:
+            lang === "ar"
+                ? "حديث"
+                : "Modern",
+
+        clean:
+            lang === "ar"
+                ? "بسيط"
+                : "Clean",
+
+        elegant:
+            lang === "ar"
+                ? "أنيق"
+                : "Elegant"
+    };
+
+
+    $("fontBtn").title =
+        lang === "ar"
+            ? `نمط الخط: ${names[fontStyle]}`
+            : `Font style: ${names[fontStyle]}`;
+
+
+    $("fontBtn").setAttribute(
+        "aria-label",
+        $("fontBtn").title
+    );
+}
+
+
+function changeFontStyle() {
+
+    let index =
+        fontStyles.indexOf(
+            fontStyle
+        );
+
+
+    index =
+        (index + 1) %
+        fontStyles.length;
+
+
+    fontStyle =
+        fontStyles[index];
+
+
+    localStorage.setItem(
+        "smFont",
+        fontStyle
+    );
+
+
+    applyFontStyle();
+
+
+    const message =
+        lang === "ar"
+            ? (
+                fontStyle === "modern"
+                    ? "تم اختيار الخط الحديث."
+                    : fontStyle === "clean"
+                        ? "تم اختيار الخط البسيط."
+                        : "تم اختيار الخط الأنيق."
+            )
+            : (
+                fontStyle === "modern"
+                    ? "Modern font selected."
+                    : fontStyle === "clean"
+                        ? "Clean font selected."
+                        : "Elegant font selected."
+            );
+
+
+    status(
+        message,
+        true
+    );
+}
+
+
+/* =========================================================
+   6. WEATHER CODE HELPER
    ========================================================= */
 
 function wc(code) {
 
-    let a = W[code] || ["Weather", "طقس", "🌤️", "cloud"];
+    let a =
+        W[code] ||
+        [
+            "Weather",
+            "طقس",
+            "🌤️",
+            "cloud"
+        ];
+
 
     return {
-        label: lang === "ar" ? a[1] : a[0],
-        icon: a[2],
-        scene: a[3]
+
+        label:
+            lang === "ar"
+                ? a[1]
+                : a[0],
+
+        icon:
+            a[2],
+
+        scene:
+            a[3]
     };
 }
 
 
+/* =========================================================
+   7. FETCH JSON
+   ========================================================= */
+
 async function getJSON(url) {
 
-    let response = await fetch(url);
+    let response =
+        await fetch(url);
+
 
     if (!response.ok) {
-        throw new Error("http");
+
+        throw new Error(
+            "http"
+        );
     }
+
 
     return response.json();
 }
 
 
-function status(msg, ok = false) {
+/* =========================================================
+   8. STATUS MESSAGE
+   ========================================================= */
 
-    $("status").textContent = msg;
-    $("status").style.color = ok ? "#249c62" : "";
+function status(
+    msg,
+    ok = false
+) {
+
+    $("status").textContent =
+        msg;
+
+
+    $("status").style.color =
+        ok
+            ? "#249c62"
+            : "";
 }
 
 
+/* =========================================================
+   9. DATE / TIME
+   ========================================================= */
+
 function fmtTime(iso) {
 
-    return new Date(iso).toLocaleTimeString(
-        lang === "ar" ? "ar-EG" : "en-US",
+    return new Date(
+        iso
+    ).toLocaleTimeString(
+
+        lang === "ar"
+            ? "ar-EG"
+            : "en-US",
+
         {
             hour: "numeric",
             minute: "2-digit"
@@ -226,8 +725,14 @@ function fmtTime(iso) {
 
 function fmtDay(iso) {
 
-    return new Date(iso + "T12:00:00").toLocaleDateString(
-        lang === "ar" ? "ar-EG" : "en-US",
+    return new Date(
+        iso + "T12:00:00"
+    ).toLocaleDateString(
+
+        lang === "ar"
+            ? "ar-EG"
+            : "en-US",
+
         {
             weekday: "short"
         }
@@ -237,8 +742,14 @@ function fmtDay(iso) {
 
 function fmtDate(iso) {
 
-    return new Date(iso + "T12:00:00").toLocaleDateString(
-        lang === "ar" ? "ar-EG" : "en-US",
+    return new Date(
+        iso + "T12:00:00"
+    ).toLocaleDateString(
+
+        lang === "ar"
+            ? "ar-EG"
+            : "en-US",
+
         {
             day: "2-digit",
             month: "2-digit"
@@ -247,69 +758,133 @@ function fmtDate(iso) {
 }
 
 
+/* =========================================================
+   10. COUNTRY FLAG
+   ========================================================= */
+
 function countryFlag(code) {
 
-    if (!code || code.length !== 2) {
+    if (
+        !code ||
+        code.length !== 2
+    ) {
+
         return "";
     }
 
-    return [...code.toUpperCase()]
-        .map(c => String.fromCodePoint(127397 + c.charCodeAt()))
+
+    return [
+        ...code.toUpperCase()
+    ]
+        .map(
+            c =>
+                String.fromCodePoint(
+                    127397 +
+                    c.charCodeAt()
+                )
+        )
         .join("");
 }
 
 
 /* =========================================================
-   GEOCODING
+   11. GEOCODING
    ========================================================= */
 
-async function geocode(query, count = 6) {
+async function geocode(
+    query,
+    count = 6
+) {
 
     const url =
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}` +
-        `&count=${count}&language=${lang}&format=json`;
+        `https://geocoding-api.open-meteo.com/v1/search` +
+        `?name=${encodeURIComponent(query)}` +
+        `&count=${count}` +
+        `&language=${lang}` +
+        `&format=json`;
 
-    const data = await getJSON(url);
+
+    const data =
+        await getJSON(url);
+
 
     return data.results || [];
 }
 
 
 /* =========================================================
-   SEARCH
+   12. SEARCH PLACE
    ========================================================= */
 
 async function searchPlace(query) {
 
-    status(T[lang].loading);
+    status(
+        T[lang].loading
+    );
+
 
     try {
 
-        let results = await geocode(query, 10);
+        let results =
+            await geocode(
+                query,
+                10
+            );
+
 
         if (!results.length) {
-            throw new Error("notfound");
+
+            throw new Error(
+                "notfound"
+            );
         }
 
-        let q = query.trim().toLowerCase();
 
-        let exactCountry = results.find(
-            x => (x.country || "").toLowerCase() === q
+        let q =
+            query
+                .trim()
+                .toLowerCase();
+
+
+        let exactCountry =
+            results.find(
+                x =>
+                    (
+                        x.country ||
+                        ""
+                    )
+                        .toLowerCase() === q
+            );
+
+
+        let place =
+            exactCountry ||
+            results[0];
+
+
+        await loadWeather(
+            place
         );
 
-        let place = exactCountry || results[0];
 
-        await loadWeather(place);
-
-        saveRecent(place);
+        saveRecent(
+            place
+        );
 
     } catch (e) {
 
-        $("dashboard").classList.add("hidden");
+        $("dashboard")
+            .classList
+            .add("hidden");
+
 
         status(
-            e.message === "notfound"
+
+            e.message ===
+            "notfound"
+
                 ? T[lang].notFound
+
                 : T[lang].network
         );
     }
@@ -317,702 +892,1487 @@ async function searchPlace(query) {
 
 
 /* =========================================================
-   LOAD WEATHER
+   13. LOAD WEATHER
    ========================================================= */
 
 async function loadWeather(p) {
 
-    const tempUnit = unit;
-    const lat = p.latitude;
-    const lon = p.longitude;
+    const tempUnit =
+        unit;
+
+    const lat =
+        p.latitude;
+
+    const lon =
+        p.longitude;
+
 
     const weatherURL =
+
         `https://api.open-meteo.com/v1/forecast?` +
+
         `latitude=${lat}` +
+
         `&longitude=${lon}` +
-        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure,is_day` +
-        `&hourly=temperature_2m,weather_code,precipitation_probability,visibility` +
-        `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max` +
+
+        `&current=` +
+        `temperature_2m,` +
+        `apparent_temperature,` +
+        `relative_humidity_2m,` +
+        `weather_code,` +
+        `wind_speed_10m,` +
+        `surface_pressure,` +
+        `is_day` +
+
+        `&hourly=` +
+        `temperature_2m,` +
+        `weather_code,` +
+        `precipitation_probability,` +
+        `visibility` +
+
+        `&daily=` +
+        `weather_code,` +
+        `temperature_2m_max,` +
+        `temperature_2m_min,` +
+        `precipitation_probability_max,` +
+        `sunrise,` +
+        `sunset,` +
+        `uv_index_max` +
+
         `&temperature_unit=${tempUnit}` +
+
         `&wind_speed_unit=kmh` +
+
         `&timezone=auto` +
+
         `&forecast_days=7`;
 
+
     const airURL =
+
         `https://air-quality-api.open-meteo.com/v1/air-quality?` +
+
         `latitude=${lat}` +
+
         `&longitude=${lon}` +
-        `&current=us_aqi,pm2_5,pm10` +
+
+        `&current=` +
+        `us_aqi,` +
+        `pm2_5,` +
+        `pm10` +
+
         `&timezone=auto`;
+
 
     try {
 
-        let [d, a] = await Promise.all([
-            getJSON(weatherURL),
-            getJSON(airURL).catch(() => ({
-                current: {}
-            }))
-        ]);
+        let [
+            d,
+            a
+        ] =
+            await Promise.all([
 
-        currentPlace = p;
-        currentData = d;
+                getJSON(
+                    weatherURL
+                ),
 
-        render(d, a, p);
+                getJSON(
+                    airURL
+                )
+                    .catch(
+                        () => ({
+                            current: {}
+                        })
+                    )
+            ]);
+
+
+        currentPlace =
+            p;
+
+        currentData =
+            d;
+
+
+        render(
+            d,
+            a,
+            p
+        );
+
 
         status("");
 
     } catch {
 
-        throw new Error("network");
+        throw new Error(
+            "network"
+        );
     }
 }
 
 
 /* =========================================================
-   MAIN RENDER
+   14. MAIN RENDER
    ========================================================= */
 
-function render(d, a, p) {
+function render(
+    d,
+    a,
+    p
+) {
 
-    const cur = d.current;
-    const c = wc(cur.weather_code);
+    const cur =
+        d.current;
 
-    const hourIndex = Math.max(
-        0,
-        d.hourly.time.findIndex(x => x >= cur.time)
-    );
+
+    const c =
+        wc(
+            cur.weather_code
+        );
+
+
+    const hourIndex =
+        Math.max(
+
+            0,
+
+            d.hourly.time.findIndex(
+                x =>
+                    x >=
+                    cur.time
+            )
+        );
+
 
     const placeName = [
+
         p.name,
-        p.admin1 && p.admin1 !== p.name ? p.admin1 : "",
+
+        p.admin1 &&
+        p.admin1 !== p.name
+            ? p.admin1
+            : "",
+
         p.country
+
     ]
         .filter(Boolean)
         .join(", ");
 
+
     $("place").textContent =
-        `${countryFlag(p.country_code)} ${placeName}`.trim();
+
+        `${countryFlag(
+            p.country_code
+        )} ${placeName}`
+            .trim();
+
 
     $("heroCity").textContent =
-        p.name || p.country || "";
+        p.name ||
+        p.country ||
+        "";
 
-    $("description").textContent = c.label;
 
-    $("weatherIcon").textContent = c.icon;
-    $("heroIcon").textContent = c.icon;
+    $("description").textContent =
+        c.label;
+
+
+    $("weatherIcon").textContent =
+        c.icon;
+
+
+    $("heroIcon").textContent =
+        c.icon;
+
 
     $("temperature").textContent =
-        Math.round(cur.temperature_2m) + "°";
+
+        Math.round(
+            cur.temperature_2m
+        ) + "°";
+
 
     $("heroTemp").textContent =
-        Math.round(cur.temperature_2m) + "°";
+
+        Math.round(
+            cur.temperature_2m
+        ) + "°";
+
 
     $("feelsLike").textContent =
-        `${T[lang].feels} ${Math.round(cur.apparent_temperature)}°`;
+
+        `${T[lang].feels} ` +
+
+        `${Math.round(
+            cur.apparent_temperature
+        )}°`;
+
 
     $("humidity").textContent =
-        cur.relative_humidity_2m + "%";
+
+        cur.relative_humidity_2m +
+        "%";
+
 
     $("wind").textContent =
-        Math.round(cur.wind_speed_10m) + " km/h";
+
+        Math.round(
+            cur.wind_speed_10m
+        ) +
+        " km/h";
+
 
     $("pressure").textContent =
-        Math.round(cur.surface_pressure) + " hPa";
+
+        Math.round(
+            cur.surface_pressure
+        ) +
+        " hPa";
+
 
     $("visibility").textContent =
-        Math.round(d.hourly.visibility[hourIndex] / 1000) + " km";
+
+        Math.round(
+            d.hourly.visibility[
+                hourIndex
+            ] / 1000
+        ) +
+        " km";
+
 
     $("rainChance").textContent =
-        d.daily.precipitation_probability_max[0] + "%";
+
+        d.daily
+            .precipitation_probability_max[0] +
+        "%";
+
 
     $("uv").textContent =
-        Math.round(d.daily.uv_index_max[0] * 10) / 10;
+
+        Math.round(
+            d.daily
+                .uv_index_max[0] *
+            10
+        ) / 10;
+
 
     $("date").textContent =
-        new Date(cur.time).toLocaleDateString(
-            lang === "ar" ? "ar-EG" : "en-US",
+
+        new Date(
+            cur.time
+        ).toLocaleDateString(
+
+            lang === "ar"
+                ? "ar-EG"
+                : "en-US",
+
             {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
+                weekday:
+                    "long",
+
+                day:
+                    "numeric",
+
+                month:
+                    "long"
             }
         );
 
-    $("localTime").textContent =
-        `${fmtTime(cur.time)} • ${d.timezone_abbreviation || d.timezone}`;
 
-    const hr = new Date(cur.time).getHours();
+    $("localTime").textContent =
+
+        `${fmtTime(
+            cur.time
+        )} • ` +
+
+        `${
+            d.timezone_abbreviation ||
+            d.timezone
+        }`;
+
+
+    const hr =
+        new Date(
+            cur.time
+        ).getHours();
+
 
     $("greeting").textContent =
+
         (
             hr < 12
-                ? T[lang].goodMorning
+
+                ? T[lang]
+                    .goodMorning
+
                 : hr < 18
-                    ? T[lang].goodAfternoon
-                    : T[lang].goodEvening
-        ) +
-        ", " +
-        (p.name || "");
 
-    renderAQ(a.current || {});
-    renderSun(d);
-    renderHourly(d, hourIndex);
-    renderDaily(d);
-    renderAlerts(d, c);
+                    ? T[lang]
+                        .goodAfternoon
 
-    setScene(c.scene, cur.is_day === 1);
+                    : T[lang]
+                        .goodEvening
+        )
+
+        + ", "
+
+        + (p.name || "");
+
+
+    renderAQ(
+        a.current || {}
+    );
+
+
+    renderSun(
+        d
+    );
+
+
+    renderHourly(
+        d,
+        hourIndex
+    );
+
+
+    renderDaily(
+        d
+    );
+
+
+    renderAlerts(
+        d,
+        c
+    );
+
+
+    setScene(
+        c.scene,
+        cur.is_day === 1
+    );
+
 
     updateFavoriteButton();
 
-    $("dashboard").classList.remove("hidden");
+
+    $("dashboard")
+        .classList
+        .remove("hidden");
 }
 
 
 /* =========================================================
-   AIR QUALITY
+   15. AIR QUALITY
    ========================================================= */
 
 function renderAQ(a) {
 
-    let q = a.us_aqi;
+    let q =
+        a.us_aqi;
+
 
     $("aqi").textContent =
-        q == null ? "—" : Math.round(q);
 
-    $("pm25").textContent =
-        a.pm2_5 == null
-            ? "—"
-            : Math.round(a.pm2_5) + " μg/m³";
-
-    $("pm10").textContent =
-        a.pm10 == null
-            ? "—"
-            : Math.round(a.pm10) + " μg/m³";
-
-    let label =
         q == null
             ? "—"
-            : q <= 50
-                ? (lang === "ar" ? "جيد" : "Good")
-                : q <= 100
-                    ? (lang === "ar" ? "متوسط" : "Moderate")
-                    : q <= 150
-                        ? (lang === "ar" ? "غير صحي للحساسين" : "Sensitive")
-                        : q <= 200
-                            ? (lang === "ar" ? "غير صحي" : "Unhealthy")
-                            : (lang === "ar" ? "سيئ جدًا" : "Very poor");
+            : Math.round(q);
 
-    $("aqBadge").textContent = label;
+
+    $("pm25").textContent =
+
+        a.pm2_5 == null
+
+            ? "—"
+
+            : Math.round(
+                a.pm2_5
+            ) +
+            " μg/m³";
+
+
+    $("pm10").textContent =
+
+        a.pm10 == null
+
+            ? "—"
+
+            : Math.round(
+                a.pm10
+            ) +
+            " μg/m³";
+
+
+    let label =
+
+        q == null
+
+            ? "—"
+
+            : q <= 50
+
+                ? (
+                    lang === "ar"
+                        ? "جيد"
+                        : "Good"
+                )
+
+                : q <= 100
+
+                    ? (
+                        lang === "ar"
+                            ? "متوسط"
+                            : "Moderate"
+                    )
+
+                    : q <= 150
+
+                        ? (
+                            lang === "ar"
+                                ? "غير صحي للحساسين"
+                                : "Sensitive"
+                        )
+
+                        : q <= 200
+
+                            ? (
+                                lang === "ar"
+                                    ? "غير صحي"
+                                    : "Unhealthy"
+                            )
+
+                            : (
+                                lang === "ar"
+                                    ? "سيئ جدًا"
+                                    : "Very poor"
+                            );
+
+
+    $("aqBadge").textContent =
+        label;
 }
 
 
 /* =========================================================
-   SUNRISE / SUNSET
+   16. SUNRISE / SUNSET
    ========================================================= */
 
 function renderSun(d) {
 
-    let rise = new Date(d.daily.sunrise[0]);
-    let set = new Date(d.daily.sunset[0]);
-    let now = new Date(d.current.time);
+    let rise =
+        new Date(
+            d.daily.sunrise[0]
+        );
 
-    let pct = Math.max(
-        0,
-        Math.min(
-            100,
-            ((now - rise) / (set - rise)) * 100
-        )
-    );
+
+    let set =
+        new Date(
+            d.daily.sunset[0]
+        );
+
+
+    let now =
+        new Date(
+            d.current.time
+        );
+
+
+    let pct =
+        Math.max(
+
+            0,
+
+            Math.min(
+
+                100,
+
+                (
+                    (now - rise) /
+                    (set - rise)
+                ) *
+                100
+            )
+        );
+
 
     $("sunrise").textContent =
-        fmtTime(d.daily.sunrise[0]);
+        fmtTime(
+            d.daily.sunrise[0]
+        );
+
 
     $("sunset").textContent =
-        fmtTime(d.daily.sunset[0]);
+        fmtTime(
+            d.daily.sunset[0]
+        );
+
 
     $("sunProgress").style.width =
         pct + "%";
 
+
+    const dotPosition =
+
+        document
+            .documentElement
+            .dir === "rtl"
+
+            ? 100 - pct
+
+            : pct;
+
+
     $("sunDot").style.left =
-        (
-            document.documentElement.dir === "rtl"
-                ? 100 - pct
-                : pct
-        ) + "%";
+        dotPosition + "%";
+
 
     $("daylightText").textContent =
-        now >= rise && now <= set
+
+        now >= rise &&
+        now <= set
+
             ? T[lang].daylight
+
             : T[lang].night;
 }
 
 
 /* =========================================================
-   HOURLY FORECAST
+   17. HOURLY FORECAST
    ========================================================= */
 
-function renderHourly(d, start) {
+function renderHourly(
+    d,
+    start
+) {
 
     $("hourly").innerHTML =
+
         d.hourly.time
-            .slice(start, start + 12)
-            .map((x, i) => {
 
-                let k = start + i;
-                let c = wc(d.hourly.weather_code[k]);
+            .slice(
+                start,
+                start + 12
+            )
 
-                return `
-                    <div class="hour">
-                        <p>${fmtTime(x)}</p>
-                        <div class="wi">${c.icon}</div>
-                        <h3>${Math.round(d.hourly.temperature_2m[k])}°</h3>
-                        <p>💧 ${d.hourly.precipitation_probability[k]}%</p>
-                    </div>
-                `;
-            })
+            .map(
+                (x, i) => {
+
+                    let k =
+                        start + i;
+
+
+                    let c =
+                        wc(
+                            d.hourly
+                                .weather_code[k]
+                        );
+
+
+                    return `
+
+                        <div class="hour">
+
+                            <p>
+                                ${fmtTime(x)}
+                            </p>
+
+                            <div class="wi">
+                                ${c.icon}
+                            </div>
+
+                            <h3>
+                                ${Math.round(
+                                    d.hourly
+                                        .temperature_2m[k]
+                                )}°
+                            </h3>
+
+                            <p>
+                                💧
+                                ${
+                                    d.hourly
+                                        .precipitation_probability[k]
+                                }%
+                            </p>
+
+                        </div>
+
+                    `;
+                }
+            )
+
             .join("");
 }
 
 
 /* =========================================================
-   7 DAY FORECAST
+   18. DAILY FORECAST
    ========================================================= */
 
 function renderDaily(d) {
 
     $("daily").innerHTML =
+
         d.daily.time
-            .map((x, i) => {
 
-                let c = wc(d.daily.weather_code[i]);
+            .map(
+                (x, i) => {
 
-                return `
-                    <div class="day">
-                        <b>${fmtDay(x)}</b>
+                    let c =
+                        wc(
+                            d.daily
+                                .weather_code[i]
+                        );
 
-                        <span class="day-date">
-                            ${fmtDate(x)}
-                        </span>
 
-                        <p class="wi">
-                            ${c.icon}
-                        </p>
+                    return `
 
-                        <p>
-                            ${c.label}
-                        </p>
+                        <div class="day">
 
-                        <b>
-                            ${Math.round(d.daily.temperature_2m_max[i])}°
-                            /
-                            ${Math.round(d.daily.temperature_2m_min[i])}°
-                        </b>
-                    </div>
-                `;
-            })
+                            <b>
+                                ${fmtDay(x)}
+                            </b>
+
+                            <span class="day-date">
+                                ${fmtDate(x)}
+                            </span>
+
+                            <p class="wi">
+                                ${c.icon}
+                            </p>
+
+                            <p>
+                                ${c.label}
+                            </p>
+
+                            <b>
+                                ${Math.round(
+                                    d.daily
+                                        .temperature_2m_max[i]
+                                )}°
+                                /
+                                ${Math.round(
+                                    d.daily
+                                        .temperature_2m_min[i]
+                                )}°
+                            </b>
+
+                        </div>
+
+                    `;
+                }
+            )
+
             .join("");
 
+
     drawChart(
-        d.daily.temperature_2m_max,
-        d.daily.temperature_2m_min,
+
+        d.daily
+            .temperature_2m_max,
+
+        d.daily
+            .temperature_2m_min,
+
         d.daily.time
     );
 }
 
 
 /* =========================================================
-   TEMPERATURE CHART
+   19. TEMPERATURE CHART
    ========================================================= */
 
-function drawChart(maxs, mins, days) {
+function drawChart(
+    maxs,
+    mins,
+    days
+) {
 
-    const canvas = $("tempChart");
-    const ctx = canvas.getContext("2d");
+    const canvas =
+        $("tempChart");
 
-    const Wc = canvas.width;
-    const H = canvas.height;
-    const pad = 36;
 
-    const all = maxs.concat(mins);
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
 
-    const lo = Math.min(...all) - 2;
-    const hi = Math.max(...all) + 2;
 
-    ctx.clearRect(0, 0, Wc, H);
+    const Wc =
+        canvas.width;
 
-    let css = getComputedStyle(document.body);
+
+    const H =
+        canvas.height;
+
+
+    const pad =
+        36;
+
+
+    const all =
+        maxs.concat(
+            mins
+        );
+
+
+    const lo =
+        Math.min(
+            ...all
+        ) - 2;
+
+
+    const hi =
+        Math.max(
+            ...all
+        ) + 2;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        Wc,
+        H
+    );
+
+
+    let css =
+        getComputedStyle(
+            document.body
+        );
+
 
     let muted =
-        css.getPropertyValue("--muted");
+        css.getPropertyValue(
+            "--muted"
+        );
+
 
     let accent =
-        css.getPropertyValue("--accent");
-
-    const pt = (v, i) => [
-        pad +
-        i *
-        (Wc - pad * 2) /
-        (maxs.length - 1),
-
-        H -
-        pad -
-        (v - lo) *
-        (H - pad * 2) /
-        (hi - lo)
-    ];
-
-    ctx.font = "12px Arial";
-    ctx.textAlign = "center";
-    ctx.fillStyle = muted;
-
-    days.forEach((d, i) => {
-
-        ctx.fillText(
-            fmtDay(d),
-            pt(maxs[i], i)[0],
-            H - 8
+        css.getPropertyValue(
+            "--accent"
         );
-    });
 
-    [
-        [maxs, accent],
-        [mins, muted]
-    ].forEach(([arr, color]) => {
 
-        ctx.beginPath();
+    const pt =
+        (v, i) => [
 
-        arr.forEach((v, i) => {
+            pad +
+            i *
+            (
+                Wc -
+                pad * 2
+            ) /
+            (
+                maxs.length -
+                1
+            ),
 
-            let [x, y] = pt(v, i);
+            H -
+            pad -
+            (
+                v - lo
+            ) *
+            (
+                H -
+                pad * 2
+            ) /
+            (
+                hi - lo
+            )
+        ];
 
-            if (i) {
-                ctx.lineTo(x, y);
-            } else {
-                ctx.moveTo(x, y);
-            }
-        });
 
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
+    ctx.font =
+        "12px Arial";
 
-        ctx.stroke();
 
-        arr.forEach((v, i) => {
+    ctx.textAlign =
+        "center";
 
-            let [x, y] = pt(v, i);
 
-            ctx.beginPath();
+    ctx.fillStyle =
+        muted;
 
-            ctx.arc(
-                x,
-                y,
-                4,
-                0,
-                Math.PI * 2
-            );
 
-            ctx.fillStyle = color;
-
-            ctx.fill();
+    days.forEach(
+        (d, i) => {
 
             ctx.fillText(
-                Math.round(v) + "°",
-                x,
-                y - 10
+
+                fmtDay(d),
+
+                pt(
+                    maxs[i],
+                    i
+                )[0],
+
+                H - 8
             );
-        });
-    });
+        }
+    );
+
+
+    [
+        [
+            maxs,
+            accent
+        ],
+
+        [
+            mins,
+            muted
+        ]
+    ]
+        .forEach(
+            ([arr, color]) => {
+
+                ctx.beginPath();
+
+
+                arr.forEach(
+                    (v, i) => {
+
+                        let [
+                            x,
+                            y
+                        ] =
+                            pt(
+                                v,
+                                i
+                            );
+
+
+                        if (i) {
+
+                            ctx.lineTo(
+                                x,
+                                y
+                            );
+
+                        } else {
+
+                            ctx.moveTo(
+                                x,
+                                y
+                            );
+                        }
+                    }
+                );
+
+
+                ctx.strokeStyle =
+                    color;
+
+
+                ctx.lineWidth =
+                    3;
+
+
+                ctx.stroke();
+
+
+                arr.forEach(
+                    (v, i) => {
+
+                        let [
+                            x,
+                            y
+                        ] =
+                            pt(
+                                v,
+                                i
+                            );
+
+
+                        ctx.beginPath();
+
+
+                        ctx.arc(
+                            x,
+                            y,
+                            4,
+                            0,
+                            Math.PI * 2
+                        );
+
+
+                        ctx.fillStyle =
+                            color;
+
+
+                        ctx.fill();
+
+
+                        ctx.fillText(
+
+                            Math.round(v) +
+                            "°",
+
+                            x,
+
+                            y - 10
+                        );
+                    }
+                );
+            }
+        );
 }
 
 
 /* =========================================================
-   WEATHER ALERTS
+   20. ALERTS
    ========================================================= */
 
-function renderAlerts(d, c) {
+function renderAlerts(
+    d,
+    c
+) {
 
     let alerts = [];
 
+
     let max =
-        d.daily.temperature_2m_max[0];
+        d.daily
+            .temperature_2m_max[0];
+
 
     let wind =
-        d.current.wind_speed_10m;
+        d.current
+            .wind_speed_10m;
+
 
     let rain =
-        d.daily.precipitation_probability_max[0];
+        d.daily
+            .precipitation_probability_max[0];
 
-    if (c.scene === "storm") {
+
+    if (
+        c.scene ===
+        "storm"
+    ) {
+
         alerts.push(
-            "⚡ " + T[lang].alertStorm
+
+            "⚡ " +
+            T[lang]
+                .alertStorm
         );
     }
+
 
     if (
         max >= 40 &&
         unit === "celsius"
     ) {
+
         alerts.push(
-            "🌡 " + T[lang].alertHeat
+
+            "🌡 " +
+            T[lang]
+                .alertHeat
         );
     }
+
 
     if (
         max >= 104 &&
         unit === "fahrenheit"
     ) {
+
         alerts.push(
-            "🌡 " + T[lang].alertHeat
+
+            "🌡 " +
+            T[lang]
+                .alertHeat
         );
     }
 
-    if (wind >= 50) {
+
+    if (
+        wind >= 50
+    ) {
+
         alerts.push(
-            "💨 " + T[lang].alertWind
+
+            "💨 " +
+            T[lang]
+                .alertWind
         );
     }
 
-    if (rain >= 80) {
+
+    if (
+        rain >= 80
+    ) {
+
         alerts.push(
-            "🌧 " + T[lang].alertRain
+
+            "🌧 " +
+            T[lang]
+                .alertRain
         );
     }
+
 
     $("alertBox").textContent =
-        alerts.join("  •  ");
+        alerts.join(
+            "  •  "
+        );
 
-    $("alertBox").classList.toggle(
-        "hidden",
-        !alerts.length
-    );
+
+    $("alertBox")
+        .classList
+        .toggle(
+            "hidden",
+            !alerts.length
+        );
 }
 
 
 /* =========================================================
-   WEATHER BACKGROUND
+   21. WEATHER SCENE
    ========================================================= */
 
-function setScene(scene, isDay) {
+function setScene(
+    scene,
+    isDay
+) {
 
-    document.body.dataset.weather = scene;
+    document.body.dataset.weather =
+        scene;
+
 
     document.body.dataset.time =
-        isDay ? "day" : "night";
+        isDay
+            ? "day"
+            : "night";
 
-    let box = $("precipitation");
 
-    box.innerHTML = "";
+    let box =
+        $("precipitation");
+
+
+    box.innerHTML =
+        "";
+
+
+    /* Rain */
 
     if (
         scene === "rain" ||
         scene === "storm"
     ) {
 
-        for (let i = 0; i < 75; i++) {
+        for (
+            let i = 0;
+            i < 85;
+            i++
+        ) {
 
             let e =
-                document.createElement("i");
+                document.createElement(
+                    "i"
+                );
 
-            e.className = "drop";
+
+            e.className =
+                "drop";
+
 
             e.style.left =
-                Math.random() * 100 + "%";
+                Math.random() *
+                100 +
+                "%";
+
 
             e.style.animationDuration =
-                (.65 + Math.random() * .8) + "s";
+                (
+                    0.65 +
+                    Math.random() *
+                    0.75
+                ) +
+                "s";
+
 
             e.style.animationDelay =
-                (-Math.random() * 2) + "s";
+                (
+                    -Math.random() *
+                    2
+                ) +
+                "s";
 
-            box.appendChild(e);
+
+            e.style.opacity =
+                (
+                    0.35 +
+                    Math.random() *
+                    0.6
+                );
+
+
+            box.appendChild(
+                e
+            );
         }
     }
 
-    if (scene === "snow") {
 
-        for (let i = 0; i < 55; i++) {
+    /* Snow */
+
+    if (
+        scene === "snow"
+    ) {
+
+        for (
+            let i = 0;
+            i < 60;
+            i++
+        ) {
 
             let e =
-                document.createElement("i");
+                document.createElement(
+                    "i"
+                );
 
-            e.className = "flake";
 
-            e.textContent = "•";
+            e.className =
+                "flake";
+
+
+            e.textContent =
+                "•";
+
 
             e.style.left =
-                Math.random() * 100 + "%";
+                Math.random() *
+                100 +
+                "%";
+
 
             e.style.animationDuration =
-                (4 + Math.random() * 5) + "s";
+                (
+                    4 +
+                    Math.random() *
+                    5
+                ) +
+                "s";
+
 
             e.style.animationDelay =
-                (-Math.random() * 6) + "s";
+                (
+                    -Math.random() *
+                    6
+                ) +
+                "s";
+
 
             e.style.fontSize =
-                (10 + Math.random() * 16) + "px";
+                (
+                    10 +
+                    Math.random() *
+                    16
+                ) +
+                "px";
 
-            box.appendChild(e);
+
+            box.appendChild(
+                e
+            );
         }
     }
 }
 
 
 /* =========================================================
-   RECENT SEARCHES
+   22. RECENT SEARCHES
    ========================================================= */
 
 function saveRecent(p) {
 
     let a =
         JSON.parse(
-            localStorage.getItem("smRecent") || "[]"
+
+            localStorage.getItem(
+                "smRecent"
+            ) ||
+            "[]"
         );
 
+
     let o = {
-        name: p.name,
-        country: p.country,
-        country_code: p.country_code,
-        latitude: p.latitude,
-        longitude: p.longitude,
-        admin1: p.admin1
+
+        name:
+            p.name,
+
+        country:
+            p.country,
+
+        country_code:
+            p.country_code,
+
+        latitude:
+            p.latitude,
+
+        longitude:
+            p.longitude,
+
+        admin1:
+            p.admin1
     };
 
+
     a = [
+
         o,
+
         ...a.filter(
             x =>
                 x.name !== o.name ||
                 x.country !== o.country
         )
-    ].slice(0, 5);
+
+    ]
+        .slice(
+            0,
+            5
+        );
+
 
     localStorage.setItem(
+
         "smRecent",
-        JSON.stringify(a)
+
+        JSON.stringify(
+            a
+        )
     );
+
 
     renderRecent();
 }
 
 
+/* =========================================================
+   23. RENDER RECENT
+   ========================================================= */
+
 function renderRecent() {
 
     let a =
         JSON.parse(
-            localStorage.getItem("smRecent") || "[]"
+
+            localStorage.getItem(
+                "smRecent"
+            ) ||
+            "[]"
         );
 
+
     $("recent").innerHTML =
-        a.slice(0, 3)
+
+        a
+            .slice(
+                0,
+                3
+            )
+
             .map(
                 (p, i) => `
+
                     <button
                         type="button"
                         data-i="${i}"
                     >
-                        ${countryFlag(p.country_code)}
+
+                        ${countryFlag(
+                            p.country_code
+                        )}
+
                         ${p.name}
+
                     </button>
+
                 `
             )
+
             .join("");
 
-    $("recent")
-        .querySelectorAll("button")
-        .forEach(b => {
 
-            b.addEventListener(
-                "click",
-                () =>
-                    loadWeather(
-                        a[+b.dataset.i]
-                    )
-            );
-        });
+    $("recent")
+        .querySelectorAll(
+            "button"
+        )
+        .forEach(
+            b => {
+
+                b.addEventListener(
+
+                    "click",
+
+                    () =>
+                        loadWeather(
+                            a[
+                                +b.dataset.i
+                            ]
+                        )
+                );
+            }
+        );
 }
 
 
 /* =========================================================
-   FAVORITES
+   24. FAVORITES
    ========================================================= */
 
 function favs() {
 
     return JSON.parse(
-        localStorage.getItem("smFavorites") || "[]"
+
+        localStorage.getItem(
+            "smFavorites"
+        ) ||
+        "[]"
     );
 }
 
 
+/* =========================================================
+   25. RENDER FAVORITES
+   ========================================================= */
+
 function renderFavorites() {
 
-    let a = favs();
+    let a =
+        favs();
+
 
     $("favorites").innerHTML =
-        a.map(
-            (p, i) => `
-                <button
-                    type="button"
-                    data-i="${i}"
-                >
-                    ${countryFlag(p.country_code)}
-                    ${p.name}
-                </button>
-            `
-        )
-        .join("");
+
+        a
+            .map(
+                (p, i) => `
+
+                    <button
+                        type="button"
+                        data-i="${i}"
+                    >
+
+                        ${countryFlag(
+                            p.country_code
+                        )}
+
+                        ${p.name}
+
+                    </button>
+
+                `
+            )
+
+            .join("");
+
 
     $("favorites")
-        .querySelectorAll("button")
-        .forEach(b => {
+        .querySelectorAll(
+            "button"
+        )
+        .forEach(
+            b => {
 
-            b.addEventListener(
-                "click",
-                () =>
-                    loadWeather(
-                        a[+b.dataset.i]
-                    )
-            );
-        });
+                b.addEventListener(
+
+                    "click",
+
+                    () =>
+                        loadWeather(
+                            a[
+                                +b.dataset.i
+                            ]
+                        )
+                );
+            }
+        );
 }
 
+
+/* =========================================================
+   26. FAVORITE BUTTON STATE
+   ========================================================= */
 
 function updateFavoriteButton() {
 
-    if (!currentPlace) {
+    if (
+        !currentPlace
+    ) {
+
         return;
     }
 
-    let yes =
-        favs().some(
-            x =>
-                x.name === currentPlace.name &&
-                x.country === currentPlace.country
-        );
 
-    $("favoriteBtn").firstChild.nodeValue =
-        yes ? "♥ " : "♡ ";
+    let yes =
+        favs()
+            .some(
+                x =>
+                    x.name ===
+                    currentPlace.name
+                    &&
+                    x.country ===
+                    currentPlace.country
+            );
+
+
+    $("favoriteBtn")
+        .firstChild
+        .nodeValue =
+
+        yes
+            ? "♥ "
+            : "♡ ";
 }
 
 
+/* =========================================================
+   27. TOGGLE FAVORITE
+   ========================================================= */
+
 function toggleFavorite() {
 
-    if (!currentPlace) {
+    if (
+        !currentPlace
+    ) {
+
         return;
     }
 
-    let a = favs();
+
+    let a =
+        favs();
+
 
     let idx =
         a.findIndex(
             x =>
-                x.name === currentPlace.name &&
-                x.country === currentPlace.country
+                x.name ===
+                currentPlace.name
+                &&
+                x.country ===
+                currentPlace.country
         );
 
-    if (idx >= 0) {
 
-        a.splice(idx, 1);
+    if (
+        idx >= 0
+    ) {
+
+        a.splice(
+            idx,
+            1
+        );
+
 
         status(
             T[lang].removed,
@@ -1022,13 +2382,26 @@ function toggleFavorite() {
     } else {
 
         a.unshift({
-            name: currentPlace.name,
-            country: currentPlace.country,
-            country_code: currentPlace.country_code,
-            latitude: currentPlace.latitude,
-            longitude: currentPlace.longitude,
-            admin1: currentPlace.admin1
+
+            name:
+                currentPlace.name,
+
+            country:
+                currentPlace.country,
+
+            country_code:
+                currentPlace.country_code,
+
+            latitude:
+                currentPlace.latitude,
+
+            longitude:
+                currentPlace.longitude,
+
+            admin1:
+                currentPlace.admin1
         });
+
 
         status(
             T[lang].saved,
@@ -1036,12 +2409,19 @@ function toggleFavorite() {
         );
     }
 
+
     localStorage.setItem(
+
         "smFavorites",
+
         JSON.stringify(
-            a.slice(0, 8)
+            a.slice(
+                0,
+                8
+            )
         )
     );
+
 
     renderFavorites();
 
@@ -1050,7 +2430,7 @@ function toggleFavorite() {
 
 
 /* =========================================================
-   CLEAR FAVORITES
+   28. CLEAR FAVORITES
    ========================================================= */
 
 function clearFavorites() {
@@ -1059,26 +2439,30 @@ function clearFavorites() {
         "smFavorites"
     );
 
+
     renderFavorites();
 
     updateFavoriteButton();
 
+
     status(
-        lang === "ar"
-            ? "تم مسح جميع الأماكن المحفوظة."
-            : "All saved places have been cleared.",
+        T[lang]
+            .favoritesCleared,
         true
     );
 }
 
 
 /* =========================================================
-   SEARCH SUGGESTIONS
+   29. SEARCH SUGGESTIONS
    ========================================================= */
 
 async function suggestions(q) {
 
-    if (q.trim().length < 2) {
+    if (
+        q.trim().length <
+        2
+    ) {
 
         $("suggestions")
             .classList
@@ -1087,26 +2471,56 @@ async function suggestions(q) {
         return;
     }
 
+
     try {
 
         let a =
-            await geocode(q, 6);
+            await geocode(
+                q,
+                6
+            );
+
 
         $("suggestions").innerHTML =
-            a.map(
-                (p, i) => `
-                    <button
-                        type="button"
-                        data-i="${i}"
-                    >
-                        ${countryFlag(p.country_code)}
-                        <b>${p.name}</b>
-                        ${p.admin1 ? ", " + p.admin1 : ""}
-                        ${p.country ? ", " + p.country : ""}
-                    </button>
-                `
-            )
-            .join("");
+
+            a
+                .map(
+                    (p, i) => `
+
+                        <button
+                            type="button"
+                            data-i="${i}"
+                        >
+
+                            ${countryFlag(
+                                p.country_code
+                            )}
+
+                            <b>
+                                ${p.name}
+                            </b>
+
+                            ${
+                                p.admin1
+                                    ? ", " +
+                                    p.admin1
+                                    : ""
+                            }
+
+                            ${
+                                p.country
+                                    ? ", " +
+                                    p.country
+                                    : ""
+                            }
+
+                        </button>
+
+                    `
+                )
+
+                .join("");
+
 
         $("suggestions")
             .classList
@@ -1115,77 +2529,116 @@ async function suggestions(q) {
                 !a.length
             );
 
+
         $("suggestions")
-            .querySelectorAll("button")
-            .forEach(b => {
+            .querySelectorAll(
+                "button"
+            )
+            .forEach(
+                b => {
 
-                b.onclick = () => {
+                    b.onclick =
+                        () => {
 
-                    let p =
-                        a[+b.dataset.i];
+                            let p =
+                                a[
+                                    +b.dataset.i
+                                ];
 
-                    $("searchInput").value =
-                        p.name;
 
-                    $("suggestions")
-                        .classList
-                        .add("hidden");
+                            $("searchInput").value =
+                                p.name;
 
-                    loadWeather(p)
-                        .then(
-                            () =>
-                                saveRecent(p)
-                        );
-                };
-            });
+
+                            $("suggestions")
+                                .classList
+                                .add(
+                                    "hidden"
+                                );
+
+
+                            loadWeather(
+                                p
+                            )
+                                .then(
+                                    () =>
+                                        saveRecent(
+                                            p
+                                        )
+                                );
+                        };
+                }
+            );
 
     } catch {
+
+        /* Suggestions failure
+           should not break app */
     }
 }
 
 
 /* =========================================================
-   SEARCH FORM
+   30. SEARCH FORM
    ========================================================= */
 
 $("searchForm")
     .addEventListener(
+
         "submit",
+
         e => {
 
             e.preventDefault();
+
 
             let q =
                 $("searchInput")
                     .value
                     .trim();
 
+
             $("suggestions")
                 .classList
-                .add("hidden");
+                .add(
+                    "hidden"
+                );
+
 
             if (q) {
-                searchPlace(q);
+
+                searchPlace(
+                    q
+                );
             }
         }
     );
 
 
+/* =========================================================
+   31. LIVE SEARCH INPUT
+   ========================================================= */
+
 $("searchInput")
     .addEventListener(
+
         "input",
+
         e => {
 
             clearTimeout(
                 searchTimer
             );
 
+
             searchTimer =
                 setTimeout(
+
                     () =>
                         suggestions(
                             e.target.value
                         ),
+
                     300
                 );
         }
@@ -1193,120 +2646,202 @@ $("searchInput")
 
 
 /* =========================================================
-   LANGUAGE BUTTON
+   32. LANGUAGE BUTTON
    ========================================================= */
 
-$("langBtn").onclick = () => {
+$("langBtn").onclick =
+    async () => {
 
-    lang =
-        lang === "en"
-            ? "ar"
-            : "en";
-
-    localStorage.setItem(
-        "smLang",
-        lang
-    );
-
-    tr();
-
-    if (currentPlace) {
-        loadWeather(currentPlace);
-    }
-};
+        lang =
+            lang === "en"
+                ? "ar"
+                : "en";
 
 
-/* =========================================================
-   THEME BUTTON
-   ========================================================= */
-
-$("themeBtn").onclick = () => {
-
-    document.body
-        .classList
-        .toggle("manual-dark");
-
-    localStorage.setItem(
-        "smTheme",
-        document.body.classList.contains("manual-dark")
-            ? "dark"
-            : "light"
-    );
-
-    $("themeBtn").textContent =
-        document.body.classList.contains("manual-dark")
-            ? "☀"
-            : "☾";
-
-    if (currentData) {
-
-        drawChart(
-            currentData.daily.temperature_2m_max,
-            currentData.daily.temperature_2m_min,
-            currentData.daily.time
+        localStorage.setItem(
+            "smLang",
+            lang
         );
-    }
-};
+
+
+        tr();
+
+        applyFontStyle();
+
+
+        if (
+            currentPlace
+        ) {
+
+            await loadWeather(
+                currentPlace
+            );
+        }
+    };
 
 
 /* =========================================================
-   TEMPERATURE UNIT
+   33. FONT BUTTON
    ========================================================= */
 
-$("cBtn").onclick = () => {
-
-    unit = "celsius";
-
-    localStorage.setItem(
-        "smUnit",
-        unit
-    );
-
-    setUnits();
-
-    if (currentPlace) {
-        loadWeather(currentPlace);
-    }
-};
+$("fontBtn").onclick =
+    changeFontStyle;
 
 
-$("fBtn").onclick = () => {
+/* =========================================================
+   34. THEME BUTTON
+   ========================================================= */
 
-    unit = "fahrenheit";
+$("themeBtn").onclick =
+    () => {
 
-    localStorage.setItem(
-        "smUnit",
-        unit
-    );
+        document.body
+            .classList
+            .toggle(
+                "manual-dark"
+            );
 
-    setUnits();
 
-    if (currentPlace) {
-        loadWeather(currentPlace);
-    }
-};
+        const isDark =
+            document.body
+                .classList
+                .contains(
+                    "manual-dark"
+                );
 
+
+        localStorage.setItem(
+
+            "smTheme",
+
+            isDark
+                ? "dark"
+                : "light"
+        );
+
+
+        $("themeBtn").textContent =
+
+            isDark
+                ? "☀"
+                : "☾";
+
+
+        if (
+            currentData
+        ) {
+
+            drawChart(
+
+                currentData
+                    .daily
+                    .temperature_2m_max,
+
+                currentData
+                    .daily
+                    .temperature_2m_min,
+
+                currentData
+                    .daily
+                    .time
+            );
+        }
+    };
+
+
+/* =========================================================
+   35. CELSIUS BUTTON
+   ========================================================= */
+
+$("cBtn").onclick =
+    () => {
+
+        unit =
+            "celsius";
+
+
+        localStorage.setItem(
+            "smUnit",
+            unit
+        );
+
+
+        setUnits();
+
+
+        if (
+            currentPlace
+        ) {
+
+            loadWeather(
+                currentPlace
+            );
+        }
+    };
+
+
+/* =========================================================
+   36. FAHRENHEIT BUTTON
+   ========================================================= */
+
+$("fBtn").onclick =
+    () => {
+
+        unit =
+            "fahrenheit";
+
+
+        localStorage.setItem(
+            "smUnit",
+            unit
+        );
+
+
+        setUnits();
+
+
+        if (
+            currentPlace
+        ) {
+
+            loadWeather(
+                currentPlace
+            );
+        }
+    };
+
+
+/* =========================================================
+   37. SET UNITS
+   ========================================================= */
 
 function setUnits() {
 
     $("cBtn")
         .classList
         .toggle(
+
             "active",
-            unit === "celsius"
+
+            unit ===
+            "celsius"
         );
+
 
     $("fBtn")
         .classList
         .toggle(
+
             "active",
-            unit === "fahrenheit"
+
+            unit ===
+            "fahrenheit"
         );
 }
 
 
 /* =========================================================
-   FAVORITE BUTTON
+   38. FAVORITE BUTTON
    ========================================================= */
 
 $("favoriteBtn").onclick =
@@ -1314,7 +2849,7 @@ $("favoriteBtn").onclick =
 
 
 /* =========================================================
-   CLEAR FAVORITES BUTTON
+   39. CLEAR FAVORITES BUTTON
    ========================================================= */
 
 $("clearRecentBtn").onclick =
@@ -1322,7 +2857,7 @@ $("clearRecentBtn").onclick =
 
 
 /* =========================================================
-   SHARE
+   40. SHARE
    ========================================================= */
 
 $("shareBtn").onclick =
@@ -1332,34 +2867,57 @@ $("shareBtn").onclick =
             !currentPlace ||
             !currentData
         ) {
+
             return;
         }
 
+
         let c =
             wc(
-                currentData.current.weather_code
+                currentData
+                    .current
+                    .weather_code
             );
 
+
         let txt =
+
             `${currentPlace.name}, ` +
+
             `${currentPlace.country || ""} • ` +
-            `${Math.round(currentData.current.temperature_2m)}° • ` +
+
+            `${Math.round(
+                currentData
+                    .current
+                    .temperature_2m
+            )}° • ` +
+
             `${c.label}`;
+
 
         try {
 
-            if (navigator.share) {
+            if (
+                navigator.share
+            ) {
 
                 await navigator.share({
-                    title: "SkyMotion Weather",
-                    text: txt
+
+                    title:
+                        "SkyMotion Weather",
+
+                    text:
+                        txt
                 });
 
             } else {
 
-                await navigator.clipboard.writeText(
-                    txt
-                );
+                await navigator
+                    .clipboard
+                    .writeText(
+                        txt
+                    );
+
 
                 status(
                     T[lang].copied,
@@ -1368,138 +2926,212 @@ $("shareBtn").onclick =
             }
 
         } catch {
+
+            /* User cancelled share */
         }
     };
 
 
 /* =========================================================
-   GEOLOCATION
+   41. GEOLOCATION
    ========================================================= */
 
-$("locationBtn").onclick = () => {
+$("locationBtn").onclick =
+    () => {
 
-    if (!navigator.geolocation) {
+        if (
+            !navigator.geolocation
+        ) {
+
+            status(
+                T[lang].network
+            );
+
+            return;
+        }
+
 
         status(
-            T[lang].network
+            T[lang].loading
         );
 
-        return;
-    }
 
-    status(
-        T[lang].loading
-    );
+        navigator
+            .geolocation
+            .getCurrentPosition(
 
-    navigator.geolocation.getCurrentPosition(
+                async pos => {
 
-        async pos => {
+                    let p = {
 
-            let p = {
-                name:
-                    lang === "ar"
-                        ? "موقعي"
-                        : "My location",
+                        name:
+                            lang === "ar"
+                                ? "موقعي"
+                                : "My location",
 
-                country: "",
-                country_code: "",
+                        country:
+                            "",
 
-                latitude:
-                    pos.coords.latitude,
+                        country_code:
+                            "",
 
-                longitude:
-                    pos.coords.longitude
-            };
+                        latitude:
+                            pos.coords
+                                .latitude,
 
-            try {
+                        longitude:
+                            pos.coords
+                                .longitude
+                    };
 
-                await loadWeather(p);
 
-            } catch {
+                    try {
 
-                status(
-                    T[lang].network
-                );
-            }
-        },
+                        await loadWeather(
+                            p
+                        );
 
-        () =>
-            status(
-                lang === "ar"
-                    ? "تعذر الوصول للموقع. يمكنك البحث باسم المدينة."
-                    : "Location access was unavailable. Search by city instead."
-            )
-    );
-};
+                    } catch {
+
+                        status(
+                            T[lang].network
+                        );
+                    }
+                },
+
+
+                () =>
+
+                    status(
+
+                        lang === "ar"
+
+                            ? "تعذر الوصول للموقع. يمكنك البحث باسم المدينة."
+
+                            : "Location access was unavailable. Search by city instead."
+                    )
+            );
+    };
 
 
 /* =========================================================
-   3D TILT EFFECT
+   42. 3D TILT
    ========================================================= */
 
 document
-    .querySelectorAll(".tilt")
-    .forEach(card => {
+    .querySelectorAll(
+        ".tilt"
+    )
+    .forEach(
+        card => {
 
-        card.addEventListener(
-            "mousemove",
-            e => {
+            card.addEventListener(
 
-                if (
-                    matchMedia(
-                        "(prefers-reduced-motion: reduce)"
-                    ).matches
-                ) {
-                    return;
+                "mousemove",
+
+                e => {
+
+                    if (
+                        matchMedia(
+                            "(prefers-reduced-motion: reduce)"
+                        ).matches
+                    ) {
+
+                        return;
+                    }
+
+
+                    let r =
+                        card
+                            .getBoundingClientRect();
+
+
+                    let x =
+
+                        (
+                            e.clientX -
+                            r.left
+                        ) /
+                        r.width -
+                        0.5;
+
+
+                    let y =
+
+                        (
+                            e.clientY -
+                            r.top
+                        ) /
+                        r.height -
+                        0.5;
+
+
+                    card.style.transform =
+
+                        `perspective(900px) ` +
+
+                        `rotateX(${
+                            -y * 3
+                        }deg) ` +
+
+                        `rotateY(${
+                            x * 3
+                        }deg)`;
                 }
+            );
 
-                let r =
-                    card.getBoundingClientRect();
 
-                let x =
-                    (e.clientX - r.left) /
-                    r.width -
-                    .5;
+            card.addEventListener(
 
-                let y =
-                    (e.clientY - r.top) /
-                    r.height -
-                    .5;
+                "mouseleave",
 
-                card.style.transform =
-                    `perspective(900px) ` +
-                    `rotateX(${-y * 3}deg) ` +
-                    `rotateY(${x * 3}deg)`;
-            }
-        );
+                () => {
 
-        card.addEventListener(
-            "mouseleave",
-            () => {
-
-                card.style.transform = "";
-            }
-        );
-    });
+                    card.style.transform =
+                        "";
+                }
+            );
+        }
+    );
 
 
 /* =========================================================
-   INITIAL SETTINGS
+   43. INITIAL THEME
    ========================================================= */
 
 if (
-    localStorage.getItem("smTheme") === "dark"
+    localStorage.getItem(
+        "smTheme"
+    ) === "dark"
 ) {
 
     document.body
         .classList
-        .add("manual-dark");
+        .add(
+            "manual-dark"
+        );
+
 
     $("themeBtn").textContent =
         "☀";
 }
 
+
+/* =========================================================
+   44. INITIAL FONT
+   ========================================================= */
+
+document.body.dataset.font =
+    fontStyle;
+
+
+/* =========================================================
+   45. INITIAL UI
+   ========================================================= */
+
 tr();
+
+applyFontStyle();
 
 setUnits();
 
@@ -1509,19 +3141,30 @@ renderFavorites();
 
 
 /* =========================================================
-   INITIAL WEATHER
+   46. INITIAL WEATHER
    ========================================================= */
 
 let first =
+
     JSON.parse(
-        localStorage.getItem("smRecent") || "[]"
+
+        localStorage.getItem(
+            "smRecent"
+        ) ||
+        "[]"
+
     )[0];
+
 
 if (first) {
 
-    loadWeather(first);
+    loadWeather(
+        first
+    );
 
 } else {
 
-    searchPlace("Cairo");
+    searchPlace(
+        "Cairo"
+    );
 }
